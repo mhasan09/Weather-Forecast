@@ -16,6 +16,7 @@ def process_batch_area_data():
         dataset = process_area_data()
         forecasted_data = {area["name"]: third_party_request(lat=area["lat"], long=area["long"]) for area in dataset["districts"]}
         cache.set("forecasted_data", forecasted_data, timeout=CACHE_TTL)
+        return cache.get("forecasted_data", "None")
 
     except Exception as e:
         logger.debug(repr(e))
