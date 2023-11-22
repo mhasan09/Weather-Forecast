@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api',
+    'rest_framework',
     'corsheaders',
     'django_extensions',
     'cid.apps.CidAppConfig',
@@ -71,6 +72,18 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'cid.middleware.CidMiddleware',
 ]
+
+# DRF Conf start
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (),
+    'DEFAULT_PERMISSION_CLASSES': (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ]
+}
+# DRF conf end
 
 ROOT_URLCONF = 'Weather_forecast.urls'
 
@@ -150,21 +163,16 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATIC_URL = '/weather-forecast/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # LOGGING SETUP START#
 GENERAL_LOGGER = env.str('LOGGING_CHANNEL', 'general')
 DJANGO_LOG_LEVEL = env.str('DJANGO_LOG_LEVEL', 'DEBUG')
 LOG_LEVEL = env.str('LOG_LEVEL', 'DEBUG')
-LOGGER_ROOT_NAME = env.str("LOGGER_ROOT_NAME", "weather_forecast")
+LOGGER_ROOT_NAME = env.str('LOGGER_ROOT_NAME', 'weather_forecast')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
