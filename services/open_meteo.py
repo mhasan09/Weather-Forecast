@@ -42,18 +42,4 @@ def third_party_request(lat, long):
         return None
 
 
-"""
-            required_time_index = []
-            for i in range(len(hourly_data["date"])):
-                if hourly_data["date"].time[20].hour == 14:
-                    required_time_index.append(i)
 
-            logger.debug({"required_time_index": required_time_index})
-
-            sum_of_temperature = 0
-            for i in required_time_index:
-                sum_of_temperature += hourly_data["temperature_2m"][i]
-
-            average_temp = sum_of_temperature / 7
-            logger.debug({"average_temp": average_temp})
-"""
