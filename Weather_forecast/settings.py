@@ -9,23 +9,34 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
+import environ
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Set environment configuration
+env = environ.Env(
+    DEBUG=(bool, False),
+)
+# reading .env file
+env_file_path = os.path.join(BASE_DIR, '.ci_env') if os.getenv("KANIKO_DJANGO_ENV", "") == "test" else os.path.join(
+    os.getenv("ENV_FILE_PATH", BASE_DIR), '.env')
+
+environ.Env.read_env(env_file_path)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-e2e0n4^ezn=td^eb@t!%5s!1kd04s^a7bc^75#7&0ksymmc@hf'
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 
 # Application definition
@@ -37,7 +48,33 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'api'
 ]
+
+# CORS CONFIG #
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_METHODS = (
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'OPTIONS',
+    'PATCH',
+)
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'contenttype',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+# CORS CONFIG END #
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -47,9 +84,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'cid.middleware.CidMiddleware',
 ]
 
 ROOT_URLCONF = 'Weather_forecast.urls'
+
+# django-correlation-id config
+CID_GENERATE = True
+CID_HEADER = 'HTTP_X_REQUEST_ID'
+CID_RESPONSE_HEADER = 'X-Request-ID'
+# django-correlation-id config end
 
 TEMPLATES = [
     {
@@ -106,7 +150,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Dhaka'
 
 USE_I18N = True
 
@@ -122,3 +166,48 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# LOGGING SETUP START#
+GENERAL_LOGGER = env.str('LOGGING_CHANNEL', 'general')
+DJANGO_LOG_LEVEL = env.str('DJANGO_LOG_LEVEL', 'DEBUG')
+LOG_LEVEL = env.str('LOG_LEVEL', 'DEBUG')
+LOGGER_ROOT_NAME = env.str("LOGGER_ROOT_NAME", "weather_forecast")
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '[cid: {cid}] | {asctime} | {levelname} | {pathname}:{lineno} | {message}',
+            'style': '{',
+            'datefmt': "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+            'filters': ['correlation'],
+        },
+    },
+    'filters': {
+        'correlation': {
+            '()': 'cid.log.CidContextFilter'
+        },
+    },
+    'loggers': {
+        LOGGER_ROOT_NAME: {
+            'level': LOG_LEVEL,
+            'handlers': ['console'],
+            'propagate': False,
+            'filters': ['correlation'],
+        },
+
+        'general': {
+            'handlers': ['console'],
+            'level': LOG_LEVEL,
+            'propagate': False,
+        },
+
+    },
+}
+# LOG SETUP END
