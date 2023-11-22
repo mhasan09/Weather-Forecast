@@ -30,7 +30,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'api'
+    'api',
+    'corsheaders',
+    'django_extensions',
+    'cid.apps.CidAppConfig',
 ]
 
 # CORS CONFIG #
@@ -80,8 +83,7 @@ CID_RESPONSE_HEADER = 'X-Request-ID'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -102,7 +104,7 @@ WSGI_APPLICATION = 'Weather_forecast.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
     }
 }
 
@@ -189,3 +191,7 @@ LOGGING = {
     },
 }
 # LOG SETUP END
+
+
+# Weather forecast settings
+FORECAST_URL = env('FORECAST_URL')
