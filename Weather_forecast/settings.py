@@ -108,6 +108,19 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': env.str('CACHE_NODE'),
+        "KEY_PREFIX": "weather_forecast_",
+        "TIMEOUT": env.int('CACHE_TTL'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            "PASSWORD": env.str('CACHE_PASS'),
+        }
+    }
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
