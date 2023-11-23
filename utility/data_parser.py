@@ -1,3 +1,5 @@
+from datetime import datetime
+
 def parse_forecasted_data(forecasted_data):
     """
     This lower block of codes is the naive version for
@@ -36,10 +38,29 @@ def parse_forecasted_dates(forecasted_data):
     return list(set(date_data))
 
 
+def parse_2pm_weather(forecasted_data, location, date):
+    temperature_index = -1
+    formatted_date = datetime.strptime(date, "%Y-%m-%d").date()
+    for index, data in enumerate(forecasted_data[location]["date"]):
+        if data.day == formatted_date.day and data.hour == 14:
+            temperature_index = index
+    return forecasted_data[location]["temperature_2m"][temperature_index]
+
+
 def parse_travel_decision_data(**kwargs):
     forecasted_data = kwargs["forecasted_data"]
     current_location = kwargs["requested_data"]["current_location"].title()
     destination = kwargs["requested_data"]["destination"].title()
     date_of_travel = kwargs["requested_data"]["date_of_travel"]
 
+    current_location_2pm_weather = parse_2pm_weather(forecasted_data=forecasted_data,
+                                                     location=current_location,
+                                                     date=date_of_travel)
 
+    destination_2pm_weather = parse_2pm_weather(forecasted_data=forecasted_data,
+                                                location=destination,
+                                                date=date_of_travel)
+
+    if current_location_2pm_weather > destination_2pm_weather:
+        return "It will be cool there, you can travel"
+    return "Do not travel, better stay home"
