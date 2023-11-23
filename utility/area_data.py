@@ -518,3 +518,7 @@ area_data = {
 
 def process_area_data():
     return area_data
+
+
+def process_district_data():
+    return [district["name"] for district in area_data["districts"]]
