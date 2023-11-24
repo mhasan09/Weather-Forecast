@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 def parse_forecasted_data(forecasted_data):
     """
     This lower block of codes is the naive version for
@@ -34,11 +35,17 @@ def parse_forecasted_data(forecasted_data):
 
 
 def parse_forecasted_dates(forecasted_data):
+    """
+    Returns only the forecasted dates
+    """
     date_data = [date.date() for date in forecasted_data["Dhaka"]["date"]]
     return list(set(date_data))
 
 
 def parse_2pm_weather(forecasted_data, location, date):
+    """
+    This function is basically find out the 2pm weather based on date and location
+    """
     temperature_index = -1
     formatted_date = datetime.strptime(date, "%Y-%m-%d").date()
     for index, data in enumerate(forecasted_data[location]["date"]):
@@ -48,6 +55,12 @@ def parse_2pm_weather(forecasted_data, location, date):
 
 
 def parse_travel_decision_data(**kwargs):
+    """
+    This function filter out the serializer data first from the cached data
+    and then parse out the 2pm weather based on location and dates
+    and then compares with current location and destination weather
+    which will determine whether to go or stay on the location
+    """
     forecasted_data = kwargs["forecasted_data"]
     current_location = kwargs["requested_data"]["current_location"].title()
     destination = kwargs["requested_data"]["destination"].title()
