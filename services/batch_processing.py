@@ -13,6 +13,11 @@ logger = get_logger(__name__)
 
 def process_batch_area_data():
     try:
+        """
+        This function is responsible for setting up the cache for the first time
+        which will call the open-meteo API with multiple area geo location and batch process the data
+        and eventually setting up the cache 
+        """
         dataset = process_area_data()
         forecasted_data = {area["name"]: third_party_request(lat=area["lat"], long=area["long"]) for area in dataset["districts"]}
         cache.set("forecasted_data", forecasted_data, timeout=CACHE_TTL)
