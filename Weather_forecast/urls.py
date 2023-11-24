@@ -22,7 +22,6 @@ from Weather_forecast import settings
 
 urlpatterns = [
     re_path(r"static/(?P<path>.*)$", serve, {"document_root": settings.STATIC_ROOT}),
-    path('weather-forecast/admin/', admin.site.urls),
     path('weather-forecast/api/', include('api.urls')),
 ]
 
