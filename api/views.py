@@ -1,3 +1,4 @@
+import time
 from django.core.cache import cache
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
@@ -15,13 +16,10 @@ from utility.response_time_decorator import calculate_response_time
 logger = get_logger(__name__)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-@method_decorator(require_http_methods(["GET"]), name='dispatch')
 class GetCoolestDistrictsAPIView(APIView):
     authentication_classes = []
     permission_classes = []
 
-    @calculate_response_time
     def get(self, request):
         forecasted_data = cache.get("forecasted_data", None)
 
@@ -29,7 +27,11 @@ class GetCoolestDistrictsAPIView(APIView):
             forecasted_data = process_batch_area_data()
             parsed_data = parse_forecasted_data(forecasted_data)
         else:
+            start_time = time.time()
             parsed_data = parse_forecasted_data(forecasted_data)
+            elapsed_time = (time.time() - start_time) * 1000 # in ms
+            if elapsed_time > 500:
+                return JsonResponse({})
 
         return JsonResponse(parsed_data)
 
