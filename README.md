@@ -27,6 +27,12 @@
     ```shell
     python manage.py runserver
     ```
+    
+4.  For running unittest:
+
+    ```shell
+    python manage.py test
+    ```
 ## License
 
 This project is licensed under the [License Name] - see the [LICENSE](LICENSE) file for details.
