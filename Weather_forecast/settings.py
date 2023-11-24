@@ -10,7 +10,7 @@ env = environ.Env(
     DEBUG=(bool, False),
 )
 # reading .env file
-env_file_path = os.path.join(os.getenv("ENV_FILE_PATH", BASE_DIR), '.env')
+env_file_path = os.path.join(os.getenv("ENV_FILE_PATH", BASE_DIR), '.env.strativ')
 
 environ.Env.read_env(env_file_path)
 
